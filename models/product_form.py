@@ -66,7 +66,7 @@ class ProductPack(models.Model):
         self.pack_quantity = total_quantity - 1
 
     def update_quantity(self):
-        company_user = self.env.company
+        company_user = self.env.user.company_id
         product_id = len(self.product_variant_ids) == 1 and self.product_variant_id.id
         location_id = self.pack_location_id.id
         if not location_id:
@@ -78,7 +78,8 @@ class ProductPack(models.Model):
         self.env['stock.quant'].with_context(inventory_mode = True).sudo().create({
             'product_id': product_id,
             'location_id': location_id,
-            'inventory_quantity': self.pack_quantity,
+            'quantity': self.pack_quantity,
+            'reserved_quantity': self.pack_quantity,
         })
 
     @api.onchange('pack_location_id')
